@@ -102,7 +102,7 @@ const LibraryItem = ({ type, config }) => {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`w-11 h-11 rounded-2xl transition-all relative group flex items-center justify-center border-[1px] cursor-grab active:cursor-grabbing
+      className={`w-11 h-11 rounded-2xl relative group flex items-center justify-center border-[1px] cursor-grab active:cursor-grabbing transition-all duration-300 hover:scale-105 active:scale-95 ease-[var(--ease-snappy)]
         ${isDragging ? 'opacity-40 grayscale' : 'bg-peg-knob/40 border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60'}
       `}
     >
@@ -391,7 +391,7 @@ function App() {
                 <button
                   key={group.id}
                   onClick={() => setActiveCategory(group.id)}
-                  className="w-11 h-11 rounded-2xl bg-peg-knob/40 border-[1px] border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60 transition-all flex items-center justify-center relative group"
+                  className="w-11 h-11 rounded-2xl bg-peg-knob/40 border-[1px] border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60 transition-all duration-300 ease-[var(--ease-snappy)] hover:scale-105 active:scale-90 flex items-center justify-center relative group"
                 >
                   <group.icon size={18} />
                   {/* Tooltip Label */}
@@ -406,17 +406,22 @@ function App() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setActiveCategory(null)}
-                  className="w-11 h-11 rounded-2xl bg-black/5 border-[1px] border-dashed border-black/10 text-black/40 hover:text-black/80 hover:bg-black/10 transition-all flex items-center justify-center mb-2"
+                  className="w-11 h-11 rounded-2xl bg-black/5 border-[1px] border-dashed border-black/10 text-black/40 hover:text-black/80 hover:bg-black/10 transition-all duration-300 ease-[var(--ease-snappy)] active:scale-90 flex items-center justify-center mb-2"
                 >
                   <ChevronLeft size={16} />
                 </button>
-                {SIDEBAR_GROUPS.find(g => g.id === activeCategory).widgets.map(type => (
-                  <LibraryItem
+                {SIDEBAR_GROUPS.find(g => g.id === activeCategory).widgets.map((type, idx) => (
+                  <div
                     key={type}
-                    type={type}
-                    config={WIDGET_LIBRARY[type]}
-                    isSidebarVisible={isSidebarVisible}
-                  />
+                    className="animate-slide-in"
+                    style={{ animationDelay: `${idx * 0.05}s` }}
+                  >
+                    <LibraryItem
+                      type={type}
+                      config={WIDGET_LIBRARY[type]}
+                      isSidebarVisible={isSidebarVisible}
+                    />
+                  </div>
                 ))}
               </div>
             )}
