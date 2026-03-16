@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --color-peg-bg: #F4F2EC;
+  --color-peg-text: #171615;
+  --color-peg-border: #171615;
+  --color-peg-accent-red: #E63946;
+  --color-peg-accent-blue: #0077FF;
+  --color-peg-accent-yellow: #FFB703;
+  --color-peg-off: #E8E5DC;
+  --color-peg-knob: #D9D7D2;
+  --color-peg-lines: rgba(0, 0, 0, 0.05);
+  --color-peg-sidebar: #E8E6DF;
+}
+
+@theme {
+  --color-peg-bg: var(--color-peg-bg);
+  --color-peg-text: var(--color-peg-text);
+  --color-peg-border: var(--color-peg-border);
+  --color-peg-accent-red: var(--color-peg-accent-red);
+  --color-peg-accent-blue: var(--color-peg-accent-blue);
+  --color-peg-accent-yellow: var(--color-peg-accent-yellow);
+  --color-peg-off: var(--color-peg-off);
+  --color-peg-knob: var(--color-peg-knob);
+  --color-peg-sidebar: var(--color-peg-sidebar);
+}
+
+@layer base {
+  body {
+    @apply bg-peg-bg text-peg-text font-sans selection:bg-peg-accent-blue selection:text-white antialiased;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  }
+}
+
+.pegboard-grid {
+  background-image: radial-gradient(var(--color-peg-lines) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
