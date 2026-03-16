@@ -61,6 +61,33 @@ const WIDGET_LIBRARY = {
   feedback: { id: 'feedback', component: FeedbackWidget, colSpan: 7, rowSpan: 3, icon: MessageSquare, label: 'FEEDBACK BOARD' },
 };
 
+const SIDEBAR_GROUPS = [
+  {
+    id: 'analysis',
+    label: '분석 및 일정',
+    icon: Layout,
+    widgets: ['calendar', 'timer', 'courses']
+  },
+  {
+    id: 'daily',
+    label: '데일리',
+    icon: CheckSquare,
+    widgets: ['todo', 'equipment']
+  },
+  {
+    id: 'comm',
+    label: '소통',
+    icon: MessageSquare,
+    widgets: ['feedback', 'party', 'cafeteria']
+  },
+  {
+    id: 'aux',
+    label: '보조 장치',
+    icon: Music,
+    widgets: ['audio', 'ranking']
+  }
+];
+
 // Draggable Sidebar Icon Component
 const LibraryItem = ({ type, config }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -111,6 +138,7 @@ function App() {
   // Theme State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentThemeKey, setCurrentThemeKey] = useState('classic');
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     // Apply theme colors to CSS variables
@@ -137,7 +165,7 @@ function App() {
     if (isSidebarVisible) {
       idleTimerRef.current = setTimeout(() => {
         setIsSidebarVisible(false);
-      }, 3000);
+      }, 7000);
     }
   }, [isSidebarVisible]);
 
@@ -150,6 +178,7 @@ function App() {
 
   const toggleSidebarManual = () => {
     setIsSidebarVisible(prev => !prev);
+    if (!isSidebarVisible === false) setActiveCategory(null); // Reset to root when closing
   };
 
 
@@ -356,14 +385,41 @@ function App() {
           <div className="w-full h-[1px] bg-black/5 shadow-[0_1px_0_rgba(255,255,255,0.8)] mb-2" />
 
           <div className="flex flex-col gap-3">
-            {Object.entries(WIDGET_LIBRARY).map(([type, config]) => (
-              <LibraryItem
-                key={type}
-                type={type}
-                config={config}
-                isSidebarVisible={isSidebarVisible}
-              />
-            ))}
+            {!activeCategory ? (
+              // Root View: Groups
+              SIDEBAR_GROUPS.map(group => (
+                <button
+                  key={group.id}
+                  onClick={() => setActiveCategory(group.id)}
+                  className="w-11 h-11 rounded-2xl bg-peg-knob/40 border-[1px] border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60 transition-all flex items-center justify-center relative group"
+                >
+                  <group.icon size={18} />
+                  {/* Tooltip Label */}
+                  <div className="absolute right-[calc(100%+25px)] px-3 py-1.5 bg-[#F4F2EC] text-black text-[9px] font-mono tracking-widest uppercase rounded-lg opacity-0 pointer-events-none transition-all group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 border-[1px] border-black/10 shadow-2xl whitespace-nowrap z-[210]">
+                    <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#F4F2EC] border-r-[1px] border-t-[1px] border-black/10 rotate-45" />
+                    {group.label}
+                  </div>
+                </button>
+              ))
+            ) : (
+              // Inner View: Widgets + Back Button
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => setActiveCategory(null)}
+                  className="w-11 h-11 rounded-2xl bg-black/5 border-[1px] border-dashed border-black/10 text-black/40 hover:text-black/80 hover:bg-black/10 transition-all flex items-center justify-center mb-2"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                {SIDEBAR_GROUPS.find(g => g.id === activeCategory).widgets.map(type => (
+                  <LibraryItem
+                    key={type}
+                    type={type}
+                    config={WIDGET_LIBRARY[type]}
+                    isSidebarVisible={isSidebarVisible}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="w-full h-[1px] bg-black/5 shadow-[0_1px_0_rgba(255,255,255,0.8)] mt-auto" />
