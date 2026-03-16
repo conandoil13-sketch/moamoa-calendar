@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { X } from 'lucide-react';
+import WidgetOptionsPopup from './WidgetOptionsPopup';
 
 const SortableWidget = ({ id, children, colSpan, rowSpan, onResize, onRemove, style: gridStyle = {} }) => {
     const {
@@ -20,6 +21,9 @@ const SortableWidget = ({ id, children, colSpan, rowSpan, onResize, onRemove, st
     const isResizing = React.useRef(false);
     const startPos = React.useRef({ x: 0, y: 0 });
     const startSize = React.useRef({ colSpan, rowSpan });
+
+    // Options Popup State
+    const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
     const handleResizeStart = (e) => {
         e.stopPropagation();
@@ -87,8 +91,22 @@ const SortableWidget = ({ id, children, colSpan, rowSpan, onResize, onRemove, st
                 <X size={10} strokeWidth={4} />
             </button>
 
-            {/* Main Content */}
-            {React.cloneElement(children, { dragHandleProps: { ...attributes, ...listeners } })}
+            {/* Main Content with Double Click for Options */}
+            {React.cloneElement(children, {
+                dragHandleProps: {
+                    ...attributes,
+                    ...listeners,
+                    onDoubleClick: () => setIsOptionsOpen(true)
+                }
+            })}
+
+            {/* Widget Options Popup */}
+            {isOptionsOpen && (
+                <WidgetOptionsPopup
+                    title={id.split('-')[0].toUpperCase()}
+                    onClose={() => setIsOptionsOpen(false)}
+                />
+            )}
 
             {/* Hardware-styled Resize Handle */}
             <div
