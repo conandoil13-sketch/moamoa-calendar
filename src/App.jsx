@@ -26,7 +26,8 @@ import {
 import Pegboard from './layout/Pegboard';
 import TimerWidget from './widgets/TimerWidget';
 import CalendarWidget from './widgets/CalendarWidget';
-import PartyFinderWidget from './widgets/PartyFinderWidget';
+import CafeteriaMenuWidget from './widgets/CafeteriaMenuWidget';
+import RecruitmentWidget from './widgets/RecruitmentWidget';
 import EquipmentWidget from './widgets/EquipmentWidget';
 import FeedbackWidget from './widgets/FeedbackWidget';
 import AudioChartWidget from './widgets/AudioChartWidget';
@@ -46,7 +47,8 @@ const WIDGET_LIBRARY = {
   calendar: { id: 'calendar', component: CalendarWidget, colSpan: 8, rowSpan: 4, icon: CalendarIcon, label: 'CALENDAR' },
   courses: { id: 'courses', component: CourseListWidget, colSpan: 3, rowSpan: 3, icon: Layers, label: 'COURSE MANAGER' },
   equipment: { id: 'equipment', component: EquipmentWidget, colSpan: 3, rowSpan: 3, icon: Archive, label: 'EQUIPMENT' },
-  party: { id: 'party', component: PartyFinderWidget, colSpan: 3, rowSpan: 3, icon: Users, label: 'PARTY FINDER' },
+  party: { id: 'party', component: RecruitmentWidget, colSpan: 3, rowSpan: 3, icon: Users, label: 'RECRUITMENT' },
+  cafeteria: { id: 'cafeteria', component: CafeteriaMenuWidget, colSpan: 3, rowSpan: 3, icon: Zap, label: 'CAFETERIA' },
   audio: { id: 'audio', component: AudioChartWidget, colSpan: 3, rowSpan: 3, icon: Music, label: 'AUDIO CHART' },
   feedback: { id: 'feedback', component: FeedbackWidget, colSpan: 7, rowSpan: 3, icon: MessageSquare, label: 'FEEDBACK BOARD' },
 };
@@ -294,6 +296,10 @@ function App() {
         return <Component {...commonProps} selectedCourse={currentCourse} setSelectedCourse={(course) => setSelectedCourseId(course.id)} myCourses={myCourses} />;
       case 'audio':
         return <Component {...commonProps} selectedCourse={currentCourse} isRunning={isRunning} />;
+      case 'party':
+        return <Component {...commonProps} />;
+      case 'cafeteria':
+        return <Component {...commonProps} />;
       default:
         return <Component {...commonProps} />;
     }
