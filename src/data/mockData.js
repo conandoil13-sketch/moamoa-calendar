@@ -81,3 +81,18 @@ export const audioChartMock = {
         { id: 's_5', title: 'Deep Focus Ambient', artist: 'Brainwave', url: 'https://youtube.com/results?search_query=deep+focus+ambient', likes: 190, isLiked: true }
     ]
 };
+
+export const todoDataMock = [
+    { id: 'todo_1', text: '타이포그래피 리서치 정리', completed: true },
+    { id: 'todo_2', text: '그리드 시스템 실습 과제', completed: false },
+    { id: 'todo_3', text: '피그마 컴포넌트 라이브러리 제작', completed: false },
+    { id: 'todo_4', text: '중간고사 범위 복습 (디자인사)', completed: false }
+];
+
+export const rankingDataMock = [
+    { id: 'rank_1', name: 'User_X (나)', hours: 42.5, trend: 'up', avatar: 'X' },
+    { id: 'rank_2', name: 'Design_King', hours: 38.2, trend: 'down', avatar: 'D' },
+    { id: 'rank_3', name: 'Layout_Master', hours: 35.8, trend: 'stable', avatar: 'L' },
+    { id: 'rank_4', name: 'Pixel_Pusher', hours: 31.2, trend: 'up', avatar: 'P' },
+    { id: 'rank_5', name: 'Font_Lover', hours: 28.5, trend: 'stable', avatar: 'F' }
+];

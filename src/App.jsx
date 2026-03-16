@@ -20,7 +20,11 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  Plus
+  Plus,
+  CheckSquare,
+  Trophy,
+  HelpCircle,
+  Layout
 } from 'lucide-react';
 
 import Pegboard from './layout/Pegboard';
@@ -28,6 +32,8 @@ import TimerWidget from './widgets/TimerWidget';
 import CalendarWidget from './widgets/CalendarWidget';
 import CafeteriaMenuWidget from './widgets/CafeteriaMenuWidget';
 import RecruitmentWidget from './widgets/RecruitmentWidget';
+import TodoListWidget from './widgets/TodoListWidget';
+import RankingWidget from './widgets/RankingWidget';
 import EquipmentWidget from './widgets/EquipmentWidget';
 import FeedbackWidget from './widgets/FeedbackWidget';
 import AudioChartWidget from './widgets/AudioChartWidget';
@@ -49,6 +55,8 @@ const WIDGET_LIBRARY = {
   equipment: { id: 'equipment', component: EquipmentWidget, colSpan: 3, rowSpan: 3, icon: Archive, label: 'EQUIPMENT' },
   party: { id: 'party', component: RecruitmentWidget, colSpan: 3, rowSpan: 3, icon: Users, label: 'RECRUITMENT' },
   cafeteria: { id: 'cafeteria', component: CafeteriaMenuWidget, colSpan: 3, rowSpan: 3, icon: Zap, label: 'CAFETERIA' },
+  todo: { id: 'todo', component: TodoListWidget, colSpan: 3, rowSpan: 3, icon: CheckSquare, label: 'TODO LIST' },
+  ranking: { id: 'ranking', component: RankingWidget, colSpan: 3, rowSpan: 3, icon: Trophy, label: 'WEEKLY RANK' },
   audio: { id: 'audio', component: AudioChartWidget, colSpan: 3, rowSpan: 3, icon: Music, label: 'AUDIO CHART' },
   feedback: { id: 'feedback', component: FeedbackWidget, colSpan: 7, rowSpan: 3, icon: MessageSquare, label: 'FEEDBACK BOARD' },
 };
@@ -299,6 +307,10 @@ function App() {
       case 'party':
         return <Component {...commonProps} />;
       case 'cafeteria':
+        return <Component {...commonProps} />;
+      case 'todo':
+        return <Component {...commonProps} />;
+      case 'ranking':
         return <Component {...commonProps} />;
       default:
         return <Component {...commonProps} />;
