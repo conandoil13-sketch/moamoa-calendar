@@ -114,6 +114,7 @@ function App() {
   const [layout, setLayout] = useState([
     { instanceId: 'timer-initial', type: 'timer', colStart: 1, rowStart: 1, colSpan: 4, rowSpan: 4 },
     { instanceId: 'calendar-initial', type: 'calendar', colStart: 5, rowStart: 1, colSpan: 8, rowSpan: 4 },
+    { instanceId: 'party-initial', type: 'party', colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 3 },
   ]);
   const [activeId, setActiveId] = useState(null);
   const [activeDragData, setActiveDragData] = useState(null);
@@ -121,29 +122,40 @@ function App() {
   // Sidebar Stealth State
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const idleTimerRef = useRef(null);
-  const [activeCategory, setActiveCategory] = useState(null);
   const [sidebarOptionsType, setSidebarOptionsType] = useState(null);
 
   // Theme State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentThemeKey, setCurrentThemeKey] = useState('autumn');
+  const [customThemes, setCustomThemes] = useState([
+    { bg: '#FDF5F7', text: '#4A2B2B', accent: '#FF8FAB', sidebar: '#F9E6EB', lines: 'rgba(255, 143, 171, 0.15)', name: 'CUSTOM_B_01' },
+    { bg: '#F0F9FF', text: '#0C4A6E', accent: '#0EA5E9', sidebar: '#E0F2FE', lines: 'rgba(14, 165, 233, 0.1)', name: 'CUSTOM_B_02' },
+    { bg: '#FDF5F7', text: '#4A2B2B', accent: '#FF8FAB', sidebar: '#F9E6EB', lines: 'rgba(255, 143, 171, 0.15)', name: 'CUSTOM_B_03' },
+    { bg: '#FDF5F7', text: '#4A2B2B', accent: '#FF8FAB', sidebar: '#F9E6EB', lines: 'rgba(255, 143, 171, 0.15)', name: 'CUSTOM_B_04' },
+  ]);
+  const [activeCategory, setActiveCategory] = useState(null);
 
 
   useEffect(() => {
     // Apply theme colors to CSS variables
-    const theme = {
-      classic: { bg: '#F4F2EC', text: '#171615', border: '#171615', accent: '#0077FF', lines: 'rgba(0, 0, 0, 0.05)', sidebar: '#E8E6DF' },
-      spring: { bg: '#FDF5F7', text: '#4A2B2B', border: '#4A2B2B', accent: '#FF8FAB', lines: 'rgba(255, 143, 171, 0.15)', sidebar: '#F9E6EB' },
-      summer: { bg: '#F0F9FF', text: '#0C4A6E', border: '#0C4A6E', accent: '#0EA5E9', lines: 'rgba(14, 165, 233, 0.1)', sidebar: '#E0F2FE' },
-      autumn: { bg: '#FFF7ED', text: '#431407', border: '#431407', accent: '#EA580C', lines: 'rgba(234, 88, 12, 0.1)', sidebar: '#FFEDD5' },
-      winter: { bg: '#F8FAFC', text: '#1E293B', border: '#1E293B', accent: '#64748B', lines: 'rgba(100, 116, 139, 0.1)', sidebar: '#F1F5F9' },
-      dark: { bg: '#121212', text: '#E0E0E0', border: '#E0E0E0', accent: '#BB86FC', lines: 'rgba(255, 255, 255, 0.05)', sidebar: '#1E1E1E' }
-    }[currentThemeKey] || { bg: '#F4F2EC', text: '#171615', border: '#171615', accent: '#0077FF', lines: 'rgba(0, 0, 0, 0.05)', sidebar: '#E8E6DF' };
+    let theme;
+    if (typeof currentThemeKey === 'object') {
+      theme = currentThemeKey;
+    } else {
+      theme = {
+        classic: { bg: '#F4F2EC', text: '#171615', border: '#171615', accent: '#0077FF', lines: 'rgba(0, 0, 0, 0.05)', sidebar: '#E8E6DF' },
+        spring: { bg: '#FDF5F7', text: '#4A2B2B', border: '#4A2B2B', accent: '#FF8FAB', lines: 'rgba(255, 143, 171, 0.15)', sidebar: '#F9E6EB' },
+        summer: { bg: '#F0F9FF', text: '#0C4A6E', border: '#0C4A6E', accent: '#0EA5E9', lines: 'rgba(14, 165, 233, 0.1)', sidebar: '#E0F2FE' },
+        autumn: { bg: '#FFF7ED', text: '#431407', border: '#431407', accent: '#EA580C', lines: 'rgba(234, 88, 12, 0.1)', sidebar: '#FFEDD5' },
+        winter: { bg: '#F8FAFC', text: '#1E293B', border: '#1E293B', accent: '#64748B', lines: 'rgba(100, 116, 139, 0.1)', sidebar: '#F1F5F9' },
+        dark: { bg: '#121212', text: '#E0E0E0', border: '#E0E0E0', accent: '#BB86FC', lines: 'rgba(255, 255, 255, 0.05)', sidebar: '#1E1E1E' }
+      }[currentThemeKey] || { bg: '#F4F2EC', text: '#171615', border: '#171615', accent: '#0077FF', lines: 'rgba(0, 0, 0, 0.05)', sidebar: '#E8E6DF' };
+    }
 
     const root = document.documentElement;
     root.style.setProperty('--color-peg-bg', theme.bg);
     root.style.setProperty('--color-peg-text', theme.text);
-    root.style.setProperty('--color-peg-border', theme.border);
+    root.style.setProperty('--color-peg-border', theme.border || theme.text);
     root.style.setProperty('--color-peg-accent-blue', theme.accent);
     root.style.setProperty('--color-peg-lines', theme.lines);
     root.style.setProperty('--color-peg-sidebar', theme.sidebar);
@@ -347,20 +359,20 @@ function App() {
         {/* Hardware Spawner Sidebar */}
         <aside
           className={`fixed right-0 top-1/2 -translate-y-1/2 z-[200] flex flex-col items-center py-6 px-3 bg-peg-sidebar border-l-[2px] border-y-[2px] border-black/10 rounded-l-3xl shadow-[-8px_0_30px_rgba(0,0,0,0.1),inset_1px_1px_0_rgba(255,255,255,0.8)] gap-4 transition-all duration-700 ease-[cubic-bezier(0.2,0,0,1)]
-            ${isSidebarVisible ? 'translate-x-0' : 'translate-x-[calc(100%-8px)]'}
+            ${isSidebarVisible ? 'translate-x-0' : 'translate-x-[calc(100%-12px)]'}
           `}
         >
           <div
             onClick={toggleSidebarManual}
-            className="absolute -left-6 top-1/2 -translate-y-1/2 w-6 h-24 bg-peg-sidebar rounded-l-xl border-l-[2px] border-y-[2px] border-black/10 flex flex-col items-center justify-center cursor-pointer shadow-[-4px_0_15px_rgba(0,0,0,0.05),inset_1px_1px_0_rgba(255,255,255,0.8)] group active:scale-95 transition-all"
+            className="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-32 bg-peg-sidebar rounded-l-xl border-l-[2px] border-y-[2px] border-black/10 flex flex-col items-center justify-center cursor-pointer shadow-[-4px_0_15px_rgba(0,0,0,0.05),inset_1px_1px_0_rgba(255,255,255,0.8)] group active:scale-95 transition-all"
           >
             {isSidebarVisible ? (
-              <ChevronRight size={16} className="text-black/40 group-hover:text-black/80 transition-colors" />
+              <ChevronRight size={20} className="text-black/40 group-hover:text-black/80 transition-colors" />
             ) : (
-              <>
-                <ChevronLeft size={16} className="text-peg-accent-blue animate-bounce-horizontal" />
-                <div className="w-1.5 h-1.5 rounded-full bg-peg-accent-blue shadow-[0_0_8px_rgba(0,71,255,0.6)] mt-2 animate-pulse" />
-              </>
+              <div className="flex flex-col items-center gap-2">
+                <ChevronLeft size={20} className="text-peg-accent-blue animate-bounce-horizontal" />
+                <div className="w-2 h-2 rounded-full bg-peg-accent-blue/40" />
+              </div>
             )}
           </div>
 
@@ -479,6 +491,12 @@ function App() {
         onClose={() => setIsSettingsOpen(false)}
         currentTheme={currentThemeKey}
         onThemeSelect={setCurrentThemeKey}
+        customThemes={customThemes}
+        onUpdateCustomTheme={(idx, newTheme) => {
+          const updated = [...customThemes];
+          updated[idx] = newTheme;
+          setCustomThemes(updated);
+        }}
       />
 
       {/* Global Widget Options Popup (Sidebar triggers) */}

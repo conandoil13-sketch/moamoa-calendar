@@ -5,12 +5,12 @@ export const courseData = [
 ];
 
 export const calendarEventsMock = [
-    { id: 'evt_fixed_1', title: '수강과목 확인 및 변경', date: 4, type: 'fixed' },
-    { id: 'evt_fixed_2', title: '전공 진입 신청 마감', date: 15, type: 'fixed' },
-    { id: 'evt_fixed_3', title: '종합시험(졸업전시)', date: 28, type: 'fixed' },
-    { id: 'evt_user_1', title: '타이포그래피 리서치', date: 6, type: 'user', color: 'bg-[#FF3B30]' },
-    { id: 'evt_user_2', title: '코딩 과제 마감', date: 12, type: 'user', color: 'bg-[#0047FF]' },
-    { id: 'evt_user_3', title: '야작 파티 참여', date: 20, type: 'user', color: 'bg-[#FFD60A]' }
+    { id: 'evt_fixed_1', title: '수강과목 확인 및 변경', date: 4, type: 'fixed', color: '#0047FF' },
+    { id: 'evt_fixed_2', title: '전공 진입 신청 마감', date: 15, type: 'fixed', color: '#0047FF' },
+    { id: 'evt_fixed_3', title: '종합시험(졸업전시)', date: 28, type: 'fixed', color: '#0047FF' },
+    { id: 'evt_user_1', title: '타이포그래피 리서치', date: 6, type: 'user', color: '#FF3B30' },
+    { id: 'evt_user_2', title: '코딩 과제 마감', date: 12, type: 'user', color: '#0047FF' },
+    { id: 'evt_user_3', title: '야작 파티 참여', date: 20, type: 'user', color: '#FFD60A' }
 ];
 
 export const mealMenuMock = {

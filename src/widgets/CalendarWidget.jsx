@@ -46,6 +46,7 @@ const CalendarWidget = ({ dragHandleProps }) => {
     const [hex, setHex] = useState('#0047FF');
     // Derived RGB from HEX
     const rgb = React.useMemo(() => {
+        if (!hex || typeof hex !== 'string' || !hex.startsWith('#')) return { r: 0, g: 0, b: 0 };
         const r = parseInt(hex.slice(1, 3), 16) || 0;
         const g = parseInt(hex.slice(3, 5), 16) || 0;
         const b = parseInt(hex.slice(5, 7), 16) || 0;
@@ -96,13 +97,13 @@ const CalendarWidget = ({ dragHandleProps }) => {
         e.dataTransfer.dropEffect = 'move';
     };
 
-    const handleDrop = (e, dayTarget) => {
+    const handleDrop = (e, dayTarget, monthTarget) => {
         e.preventDefault();
         if (!draggedEvent) return;
 
         setEvents(prev =>
             prev.map(evt =>
-                evt.id === draggedEvent.id ? { ...evt, date: dayTarget, month: currentMonth } : evt
+                evt.id === draggedEvent.id ? { ...evt, date: dayTarget, month: monthTarget } : evt
             )
         );
         setDraggedEvent(null);
@@ -120,7 +121,7 @@ const CalendarWidget = ({ dragHandleProps }) => {
         e.stopPropagation();
         if (evt.type === 'academic' || evt.type === 'holiday') return;
 
-        let color = evt.color;
+        let color = evt.color || '#0047FF';
         setEventForm({ title: evt.title, date: evt.date, color: color });
         setHex(color);
         setEditingEvent(evt);
@@ -350,7 +351,7 @@ const CalendarWidget = ({ dragHandleProps }) => {
                                     key={`${dayObj.month}-${dayObj.day}-${idx}`}
                                     className={`p-1.5 relative min-h-[70px] transition-colors group ${dayObj.isPadding ? 'bg-white/30 text-peg-text/20' : isSunday || isSaturday ? 'bg-[#FAFAFA]' : 'bg-white'} hover:bg-[#F0F8FF]`}
                                     onDragOver={handleDragOver}
-                                    onDrop={(e) => handleDrop(e, dayObj.day)}
+                                    onDrop={(e) => handleDrop(e, dayObj.day, dayObj.month)}
                                 >
                                     <div className="flex justify-between items-start">
                                         <div className="flex flex-col">
