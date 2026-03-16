@@ -9,22 +9,7 @@ import {
 } from '@dnd-kit/core';
 import { useDraggable } from '@dnd-kit/core';
 import {
-  Clock,
-  Calendar as CalendarIcon,
-  Layers,
-  Archive,
-  Users,
-  Music,
-  MessageSquare,
-  Settings,
-  Zap,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  CheckSquare,
-  Trophy,
-  HelpCircle,
-  Layout
+  ChevronLeft, ChevronRight, ChevronDown, CheckSquare, MessageSquare, Music, Settings, X, Zap, Clock, Calendar as CalendarIcon, ClipboardList, Users, Utensils, Award, Info, Search, Plus, Filter, LayoutGrid, Timer as TimerIcon, ListChecks, Radio, Trophy, Layers, Archive, HelpCircle, Layout
 } from 'lucide-react';
 
 import Pegboard from './layout/Pegboard';
@@ -40,6 +25,7 @@ import AudioChartWidget from './widgets/AudioChartWidget';
 import CourseListWidget from './widgets/CourseListWidget';
 import SortableWidget from './components/SortableWidget';
 import SettingsModal from './components/SettingsModal';
+import WidgetOptionsPopup from './components/WidgetOptionsPopup';
 import { courseData } from './data/mockData';
 import './index.css';
 
@@ -89,7 +75,7 @@ const SIDEBAR_GROUPS = [
 ];
 
 // Draggable Sidebar Icon Component
-const LibraryItem = ({ type, config }) => {
+const LibraryItem = ({ type, config, onDoubleClick }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `library-${type}`,
     data: { type: 'spawner', widgetType: type }
@@ -102,6 +88,7 @@ const LibraryItem = ({ type, config }) => {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
+      onDoubleClick={onDoubleClick}
       className={`w-11 h-11 rounded-2xl relative group flex items-center justify-center border-[1px] cursor-grab active:cursor-grabbing transition-all duration-300 hover:scale-105 active:scale-95 ease-[var(--ease-snappy)]
         ${isDragging ? 'opacity-40 grayscale' : 'bg-peg-knob/40 border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60'}
       `}
@@ -134,11 +121,13 @@ function App() {
   // Sidebar Stealth State
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const idleTimerRef = useRef(null);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [sidebarOptionsType, setSidebarOptionsType] = useState(null);
 
   // Theme State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [currentThemeKey, setCurrentThemeKey] = useState('classic');
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [currentThemeKey, setCurrentThemeKey] = useState('autumn');
+
 
   useEffect(() => {
     // Apply theme colors to CSS variables
@@ -424,7 +413,7 @@ function App() {
                     <LibraryItem
                       type={type}
                       config={WIDGET_LIBRARY[type]}
-                      isSidebarVisible={isSidebarVisible}
+                      onDoubleClick={() => setSidebarOptionsType(type)}
                     />
                   </div>
                 ))}
@@ -491,6 +480,18 @@ function App() {
         currentTheme={currentThemeKey}
         onThemeSelect={setCurrentThemeKey}
       />
+
+      {/* Global Widget Options Popup (Sidebar triggers) */}
+      {sidebarOptionsType && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/5 backdrop-blur-[2px]">
+          <div className="relative w-96 max-w-[90vw]">
+            <WidgetOptionsPopup
+              title={WIDGET_LIBRARY[sidebarOptionsType].label.toUpperCase()}
+              onClose={() => setSidebarOptionsType(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
