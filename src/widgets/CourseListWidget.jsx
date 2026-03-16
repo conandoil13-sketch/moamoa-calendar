@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronDown, Plus, X } from 'lucide-react';
-import { courseData } from '../data/mockData';
 
 // Simulated DB of available courses to "search" from
 const availableCourses = [

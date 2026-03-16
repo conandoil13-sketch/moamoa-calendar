@@ -68,7 +68,7 @@ function Flower2Icon(props) {
 }
 
 const SettingsModal = ({ isOpen, onClose, currentTheme, onThemeSelect }) => {
-    const [customPalettes, setCustomPalettes] = useState(['#FF00FF', '#00FFFF', '#FFFF00', '#00FF00']);
+    const [customPalettes] = useState(['#FF00FF', '#00FFFF', '#FFFF00', '#00FF00']);
     const [activeTab, setActiveTab] = useState('THEME');
 
     if (!isOpen) return null;

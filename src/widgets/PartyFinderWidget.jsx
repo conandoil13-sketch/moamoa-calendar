@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import liveMenuData from '../data/cafeteria_menu.json';
 import { partyListMock } from '../data/mockData';
@@ -7,17 +7,10 @@ const PartyFinderWidget = ({ dragHandleProps }) => {
     const today = new Date();
     const dayOfWeek = today.getDay(); // 0 is Sunday, 1 is Monday
 
-    const [parties, setParties] = useState(partyListMock);
-    const [activeCafeLabel, setActiveCafeLabel] = useState("");
-    const [activeTab, setActiveTab] = useState('lunch');
-
-    // Initialize active cafe if not set
     const cafeKeys = Object.keys(liveMenuData);
-    useEffect(() => {
-        if (!activeCafeLabel && cafeKeys.length > 0) {
-            setActiveCafeLabel(cafeKeys[0]);
-        }
-    }, [cafeKeys, activeCafeLabel]);
+    const [parties, setParties] = useState(partyListMock);
+    const [activeCafeLabel, setActiveCafeLabel] = useState(cafeKeys[0] || "");
+    const [activeTab, setActiveTab] = useState('lunch');
 
     const getDailyMeal = () => {
         if (!activeCafeLabel || !liveMenuData[activeCafeLabel]) return ["식단 정보가 없습니다."];

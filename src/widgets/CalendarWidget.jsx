@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { calendarEventsMock } from '../data/mockData';
 import { X, Plus, Trash2, Hash } from 'lucide-react';
 
@@ -15,6 +15,26 @@ const CalendarWidget = ({ dragHandleProps }) => {
     const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
     const [draggedEvent, setDraggedEvent] = useState(null);
 
+    // Calculate Grid (Moved up for scoping)
+    const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
+    const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
+
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
+
+    const gridDays = [];
+    const prevMonthDays = getDaysInMonth(currentYear, currentMonth - 1);
+    for (let i = firstDay - 1; i >= 0; i--) {
+        gridDays.push({ day: prevMonthDays - i, month: currentMonth - 1, isPadding: true });
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+        gridDays.push({ day: i, month: currentMonth, isPadding: false });
+    }
+    const remaining = 42 - gridDays.length;
+    for (let i = 1; i <= remaining; i++) {
+        gridDays.push({ day: i, month: currentMonth + 1, isPadding: true });
+    }
+
     // Modal state for Add/Edit
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
@@ -23,44 +43,17 @@ const CalendarWidget = ({ dragHandleProps }) => {
     // Advanced Color Management
     const [customColors, setCustomColors] = useState(['#0047FF', '#FF3B30', '#FFE600', '#101010', '#00D084']);
     const [isPickerOpen, setIsPickerOpen] = useState(false);
-    const [rgb, setRgb] = useState({ r: 0, g: 71, b: 255 });
     const [hex, setHex] = useState('#0047FF');
-
-    // Calculate Grid
-    const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
-    const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
-
-    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
-
-    // Create grid with padding
-    const gridDays = [];
-    // Padding from prev month
-    const prevMonthDays = getDaysInMonth(currentYear, currentMonth - 1);
-    for (let i = firstDay - 1; i >= 0; i--) {
-        gridDays.push({ day: prevMonthDays - i, month: currentMonth - 1, isPadding: true });
-    }
-    // Current month
-    for (let i = 1; i <= daysInMonth; i++) {
-        gridDays.push({ day: i, month: currentMonth, isPadding: false });
-    }
-    // Padding for next month to fill 42 cells (6 rows)
-    const remaining = 42 - gridDays.length;
-    for (let i = 1; i <= remaining; i++) {
-        gridDays.push({ day: i, month: currentMonth + 1, isPadding: true });
-    }
-
-    // Sync HEX with RGB
-    useEffect(() => {
+    // Derived RGB from HEX
+    const rgb = React.useMemo(() => {
         const r = parseInt(hex.slice(1, 3), 16) || 0;
         const g = parseInt(hex.slice(3, 5), 16) || 0;
         const b = parseInt(hex.slice(5, 7), 16) || 0;
-        setRgb({ r, g, b });
+        return { r, g, b };
     }, [hex]);
 
     const handleRgbChange = (channel, value) => {
         const newRgb = { ...rgb, [channel]: parseInt(value) };
-        setRgb(newRgb);
         const newHex = `#${newRgb.r.toString(16).padStart(2, '0')}${newRgb.g.toString(16).padStart(2, '0')}${newRgb.b.toString(16).padStart(2, '0')}`.toUpperCase();
         setHex(newHex);
         setEventForm({ ...eventForm, color: newHex });
@@ -247,9 +240,9 @@ const CalendarWidget = ({ dragHandleProps }) => {
         }
     };
 
-    // Reset Week Index when mode changes or month changes
-    useEffect(() => {
-        if (viewMode === 'week') {
+    // Combine Week Index logic into navigation/state changes rather than separate effect
+    const setViewModeWithInit = (mode) => {
+        if (mode === 'week') {
             const todayDate = today.getDate();
             const todayMonth = today.getMonth() + 1;
             const todayYear = today.getFullYear();
@@ -257,11 +250,12 @@ const CalendarWidget = ({ dragHandleProps }) => {
             if (currentYear === todayYear && currentMonth === todayMonth) {
                 const index = gridDays.findIndex(d => d.day === todayDate && d.month === todayMonth);
                 if (index !== -1) setCurrentWeekIndex(Math.floor(index / 7));
-            } else if (currentWeekIndex > 5) {
+            } else {
                 setCurrentWeekIndex(0);
             }
         }
-    }, [viewMode, currentMonth, currentYear]);
+        setViewMode(mode);
+    };
 
     // ... (omitting getAllEventsForDay for brevity)
 
@@ -317,13 +311,13 @@ const CalendarWidget = ({ dragHandleProps }) => {
 
                     <div className="flex border-[1px] border-peg-border bg-[#F0F0F0] p-0.5 rounded shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
                         <button
-                            onClick={() => setViewMode('month')}
+                            onClick={() => setViewModeWithInit('month')}
                             className={`text-[9px] font-mono px-3 py-1 uppercase tracking-wider transition-colors rounded-[2px] ${viewMode === 'month' ? 'bg-white text-peg-text shadow-[0_1px_2px_rgba(0,0,0,0.1)] font-bold' : 'text-peg-text/50 hover:text-peg-text'}`}
                         >
                             Month
                         </button>
                         <button
-                            onClick={() => setViewMode('week')}
+                            onClick={() => setViewModeWithInit('week')}
                             className={`text-[9px] font-mono px-3 py-1 uppercase tracking-wider transition-colors rounded-[2px] ${viewMode === 'week' ? 'bg-white text-peg-text shadow-[0_1px_2px_rgba(0,0,0,0.1)] font-bold' : 'text-peg-text/50 hover:text-peg-text'}`}
                         >
                             Week

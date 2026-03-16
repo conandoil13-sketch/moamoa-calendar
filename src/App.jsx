@@ -52,7 +52,7 @@ const WIDGET_LIBRARY = {
 };
 
 // Draggable Sidebar Icon Component
-const LibraryItem = ({ type, config, isSidebarVisible }) => {
+const LibraryItem = ({ type, config }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `library-${type}`,
     data: { type: 'spawner', widgetType: type }
@@ -142,9 +142,6 @@ function App() {
     setIsSidebarVisible(prev => !prev);
   };
 
-  const handleSidebarInteraction = () => {
-    startAutoHideTimer();
-  };
 
   const currentCourse = myCourses.find(c => c.id === selectedCourseId) || myCourses[0] || { id: 'none', title: '과목 없음', professor: '-' };
 

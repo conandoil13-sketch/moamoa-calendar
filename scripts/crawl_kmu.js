@@ -104,7 +104,7 @@ async function crawlCafeteriaMenu() {
 
                 // Sometimes the text is only inside the input's value or as a text node next to it.
                 // Let's refine the cleaning:
-                text = text.replace(/\}?\">/g, '').trim(); // Remove leftovers like "}">"
+                text = text.replace(/\}?">/g, '').trim(); // Remove leftovers like "}">"
                 text = text.replace(/\s+/g, ' ');
 
                 weeklyMeals.push(text);

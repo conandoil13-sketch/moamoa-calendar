@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { audioChartMock } from '../data/mockData';
 
 const AudioChartWidget = ({ isRunning, selectedCourse, dragHandleProps }) => {
-    const [tracks, setTracks] = useState(audioChartMock.general);
-    const [currentSet, setCurrentSet] = useState('general');
+    const currentSet = isRunning ? 'focused' : 'general';
+    const [localTracks, setLocalTracks] = useState({
+        focused: audioChartMock.focused,
+        general: audioChartMock.general
+    });
 
-    useEffect(() => {
-        if (isRunning) {
-            setTracks(audioChartMock.focused);
-            setCurrentSet('focused');
-        } else {
-            setTracks(audioChartMock.general);
-            setCurrentSet('general');
-        }
-    }, [isRunning]);
+    const tracks = localTracks[currentSet];
 
     const toggleLike = (id) => {
-        setTracks(tracks.map(t => t.id === id ? { ...t, isLiked: !t.isLiked, likes: t.isLiked ? t.likes - 1 : t.likes + 1 } : t));
+        setLocalTracks(prev => ({
+            ...prev,
+            [currentSet]: prev[currentSet].map(t =>
+                t.id === id ? { ...t, isLiked: !t.isLiked, likes: t.isLiked ? t.likes - 1 : t.likes + 1 } : t
+            )
+        }));
     };
 
     return (

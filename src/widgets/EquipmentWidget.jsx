@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { equipmentMock } from '../data/mockData';
 
 const EquipmentWidget = ({ selectedCourse, setSelectedCourse, myCourses, dragHandleProps }) => {
-    const [items, setItems] = useState([]);
+    const [itemsPerCourse, setItemsPerCourse] = useState(equipmentMock);
     const [newItem, setNewItem] = useState('');
     const [isDropdown, setDropdown] = useState(false);
 
-    // Update items when selected course changes
-    useEffect(() => {
-        const courseItems = equipmentMock[selectedCourse.id] || [];
-        setItems(courseItems);
-    }, [selectedCourse]);
+    const items = itemsPerCourse[selectedCourse.id] || [];
 
     const toggleItem = (id) => {
-        setItems(items.map(item =>
-            item.id === id ? { ...item, checked: !item.checked } : item
-        ));
+        setItemsPerCourse(prev => ({
+            ...prev,
+            [selectedCourse.id]: prev[selectedCourse.id].map(item =>
+                item.id === id ? { ...item, checked: !item.checked } : item
+            )
+        }));
     };
 
     const addItem = (e) => {
@@ -28,7 +27,10 @@ const EquipmentWidget = ({ selectedCourse, setSelectedCourse, myCourses, dragHan
             name: newItem.trim(),
             checked: false
         };
-        setItems([...items, newEq]);
+        setItemsPerCourse(prev => ({
+            ...prev,
+            [selectedCourse.id]: [...(prev[selectedCourse.id] || []), newEq]
+        }));
         setNewItem('');
     };
 
