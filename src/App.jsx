@@ -150,6 +150,52 @@ function App() {
     useSensor(TouchSensor, { activationConstraint: { delay: 100, tolerance: 5 } })
   );
 
+  // Helper: Check if two rectangles intersect
+  const rectsIntersect = (a, b) => {
+    return (
+      a.colStart < b.colStart + b.colSpan &&
+      a.colStart + a.colSpan > b.colStart &&
+      a.rowStart < b.rowStart + b.rowSpan &&
+      a.rowStart + a.rowSpan > b.rowStart
+    );
+  };
+
+  // Helper: Recursively resolve collisions by pushing items down
+  const resolveCollisions = (currentLayout, activeInstanceId) => {
+    const activeItem = currentLayout.find(i => i.instanceId === activeInstanceId);
+    if (!activeItem) return currentLayout;
+
+    let newLayout = currentLayout.map(item => ({ ...item }));
+    let hasCollisions = true;
+    let iterations = 0;
+    const MAX_ITERATIONS = 50;
+
+    while (hasCollisions && iterations < MAX_ITERATIONS) {
+      hasCollisions = false;
+      iterations++;
+
+      for (let i = 0; i < newLayout.length; i++) {
+        const itemA = newLayout[i];
+
+        for (let j = 0; j < newLayout.length; j++) {
+          if (i === j) continue;
+          const itemB = newLayout[j];
+
+          if (rectsIntersect(itemA, itemB)) {
+            const itemToPush = (itemA.instanceId === activeInstanceId) ? itemB :
+              (itemB.instanceId === activeInstanceId) ? itemA :
+                (itemA.rowStart <= itemB.rowStart) ? itemB : itemA;
+            const pusher = (itemToPush === itemB) ? itemA : itemB;
+
+            itemToPush.rowStart = pusher.rowStart + pusher.rowSpan;
+            hasCollisions = true;
+          }
+        }
+      }
+    }
+    return newLayout;
+  };
+
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
     setActiveDragData(event.active.data.current);
@@ -182,27 +228,33 @@ function App() {
       const newColStart = Math.max(1, Math.min(GRID_COLS - template.colSpan + 1, targetCol));
       const newRowStart = targetRow;
 
-      setLayout(prev => [...prev, {
-        instanceId: newInstanceId,
-        type: data.widgetType,
-        colStart: newColStart,
-        rowStart: newRowStart,
-        colSpan: template.colSpan,
-        rowSpan: template.rowSpan
-      }]);
+      setLayout(prev => {
+        const newLayout = [...prev, {
+          instanceId: newInstanceId,
+          type: data.widgetType,
+          colStart: newColStart,
+          rowStart: newRowStart,
+          colSpan: template.colSpan,
+          rowSpan: template.rowSpan
+        }];
+        return resolveCollisions(newLayout, newInstanceId);
+      });
     } else {
       // For EXISTING widgets, use relative delta for robust movement
       const colDelta = Math.round(delta.x / (colWidth + GRID_GAP));
       const rowDelta = Math.round(delta.y / (rowHeight + GRID_GAP));
 
-      setLayout((items) => items.map((item) => {
-        if (item.instanceId === active.id) {
-          const newColStart = Math.max(1, Math.min(GRID_COLS - item.colSpan + 1, item.colStart + colDelta));
-          const newRowStart = Math.max(1, item.rowStart + rowDelta);
-          return { ...item, colStart: newColStart, rowStart: newRowStart };
-        }
-        return item;
-      }));
+      setLayout((items) => {
+        const updatedItems = items.map((item) => {
+          if (item.instanceId === active.id) {
+            const newColStart = Math.max(1, Math.min(GRID_COLS - item.colSpan + 1, item.colStart + colDelta));
+            const newRowStart = Math.max(1, item.rowStart + rowDelta);
+            return { ...item, colStart: newColStart, rowStart: newRowStart };
+          }
+          return item;
+        });
+        return resolveCollisions(updatedItems, active.id);
+      });
     }
 
     setActiveId(null);
@@ -210,8 +262,8 @@ function App() {
   };
 
   const handleResize = (instanceId, newColSpan, newRowSpan) => {
-    setLayout((prev) =>
-      prev.map((item) =>
+    setLayout((prev) => {
+      const updated = prev.map((item) =>
         item.instanceId === instanceId
           ? {
             ...item,
@@ -219,8 +271,9 @@ function App() {
             rowSpan: Math.max(1, newRowSpan),
           }
           : item
-      )
-    );
+      );
+      return resolveCollisions(updated, instanceId);
+    });
   };
 
   const removeWidget = (instanceId) => {
