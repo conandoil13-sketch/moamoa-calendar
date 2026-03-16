@@ -386,20 +386,25 @@ function App() {
 
           <div className="flex flex-col gap-3">
             {!activeCategory ? (
-              // Root View: Groups
-              SIDEBAR_GROUPS.map(group => (
-                <button
+              // Root View: Groups with back animation
+              SIDEBAR_GROUPS.map((group, idx) => (
+                <div
                   key={group.id}
-                  onClick={() => setActiveCategory(group.id)}
-                  className="w-11 h-11 rounded-2xl bg-peg-knob/40 border-[1px] border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60 transition-all duration-300 ease-[var(--ease-snappy)] hover:scale-105 active:scale-90 flex items-center justify-center relative group"
+                  className="animate-slide-back"
+                  style={{ animationDelay: `${idx * 0.04}s` }}
                 >
-                  <group.icon size={18} />
-                  {/* Tooltip Label */}
-                  <div className="absolute right-[calc(100%+25px)] px-3 py-1.5 bg-[#F4F2EC] text-black text-[9px] font-mono tracking-widest uppercase rounded-lg opacity-0 pointer-events-none transition-all group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 border-[1px] border-black/10 shadow-2xl whitespace-nowrap z-[210]">
-                    <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#F4F2EC] border-r-[1px] border-t-[1px] border-black/10 rotate-45" />
-                    {group.label}
-                  </div>
-                </button>
+                  <button
+                    onClick={() => setActiveCategory(group.id)}
+                    className="w-11 h-11 rounded-2xl bg-peg-knob/40 border-[1px] border-transparent text-black/30 hover:text-black/60 hover:bg-peg-knob/60 transition-all duration-300 ease-[var(--ease-snappy)] hover:scale-105 active:scale-90 flex items-center justify-center relative group"
+                  >
+                    <group.icon size={18} />
+                    {/* Tooltip Label */}
+                    <div className="absolute right-[calc(100%+25px)] px-3 py-1.5 bg-[#F4F2EC] text-black text-[9px] font-mono tracking-widest uppercase rounded-lg opacity-0 pointer-events-none transition-all group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 border-[1px] border-black/10 shadow-2xl whitespace-nowrap z-[210]">
+                      <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#F4F2EC] border-r-[1px] border-t-[1px] border-black/10 rotate-45" />
+                      {group.label}
+                    </div>
+                  </button>
+                </div>
               ))
             ) : (
               // Inner View: Widgets + Back Button

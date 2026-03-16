@@ -26,8 +26,24 @@
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-15px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .animate-slide-in {
   animation: slideInRight 0.4s var(--ease-snappy) both;
+}
+
+.animate-slide-back {
+  animation: slideInLeft 0.35s var(--ease-snappy) both;
 }
 
 @theme {
